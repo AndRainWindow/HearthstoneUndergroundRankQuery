@@ -44,4 +44,4 @@ class UndergroundArenaHandler:
         """
         获取数据库表列名
         """
-        return ['season', 'player', 'score']
+        return ['season', 'player', 'score', 'rank']

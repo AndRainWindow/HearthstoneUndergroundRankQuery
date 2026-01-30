@@ -76,16 +76,16 @@ def import_season_data(season, season_id):
     print(f'保存 {season} 数据，共 {len(all_data)} 条...')
     
     for row in all_data:
-        try:
-            # 只存储赛季、玩家和积分数据
-            cursor.execute('''
-            INSERT INTO simplified_rank_data (season, player, score)
-            VALUES (?, ?, ?)
-            ''', (season, row[1], row[3]))
-        except Exception as e:
-            print(f'存储失败: {e}')
-            # 忽略重复数据
-            pass
+            try:
+                # 存储赛季、玩家、积分和排名数据
+                cursor.execute('''
+                INSERT INTO simplified_rank_data (season, player, score, rank)
+                VALUES (?, ?, ?, ?)
+                ''', (season, row[1], row[3], row[0]))
+            except Exception as e:
+                print(f'存储失败: {e}')
+                # 忽略重复数据
+                pass
     
     # 提交更改
     conn.commit()

@@ -98,6 +98,11 @@ class HsRankQuery(QMainWindow):
         self.settings_btn.setFont(font)
         self.settings_btn.clicked.connect(self.open_settings)
         
+        # 玩家查询按钮
+        self.player_query_btn = QPushButton('玩家查询')
+        self.player_query_btn.setFont(font)
+        self.player_query_btn.clicked.connect(self.open_player_query_window)
+        
         # 添加到查询布局
         query_layout.addWidget(self.mode_label)
         query_layout.addWidget(self.mode_combo)
@@ -111,6 +116,7 @@ class HsRankQuery(QMainWindow):
         query_layout.addWidget(self.search_input)
         query_layout.addWidget(self.search_btn)
         query_layout.addWidget(self.reset_btn)
+        query_layout.addWidget(self.player_query_btn)
         query_layout.addWidget(self.settings_btn)
         
         # 进度条
@@ -119,14 +125,15 @@ class HsRankQuery(QMainWindow):
         
         # 结果表格
         self.result_table = QTableWidget()
-        self.result_table.setColumnCount(2)
-        self.result_table.setHorizontalHeaderLabels(['玩家', '积分'])
+        self.result_table.setColumnCount(3)
+        self.result_table.setHorizontalHeaderLabels(['排名', '玩家', '积分'])
         header_font = QFont('Arial', 18, QFont.Bold)
         self.result_table.horizontalHeader().setFont(header_font)
         self.result_table.setAlternatingRowColors(True)
         # 设置列宽自动填充
         self.result_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.result_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.result_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
         
         # 添加到主布局
         main_layout.addLayout(query_layout)
@@ -201,7 +208,10 @@ class HsRankQuery(QMainWindow):
         # 保存数据到数据库
         mode = self.mode_combo.currentText()
         server = self.server_combo.currentText()
-        season = self.season_combo.currentText()
+        season_num = self.season_combo.currentText()
+        
+        # 统一赛季格式为"第X赛季"
+        season = f'第{season_num}赛季'
         
         self.db_manager.save_data(data, season, mode, server)
     
@@ -367,7 +377,10 @@ class HsRankQuery(QMainWindow):
         matched_rows = []
         
         for row in range(self.result_table.rowCount()):
-            player_item = self.result_table.item(row, 0)
+            # 统一玩家ID在第二列（索引1）
+            player_col = 1
+            
+            player_item = self.result_table.item(row, player_col)
             if player_item:
                 player_name = player_item.text()
                 if search_text.lower() in player_name.lower():
@@ -385,8 +398,9 @@ class HsRankQuery(QMainWindow):
         
         # 显示搜索结果
         if matched_rows:
-            # 滚动到第一个匹配的行
-            self.result_table.scrollToItem(self.result_table.item(matched_rows[0], 0))
+            # 滚动到第一个匹配的行，使用固定的玩家ID列（索引1）
+            player_col = 1
+            self.result_table.scrollToItem(self.result_table.item(matched_rows[0], player_col))
             QMessageBox.information(self, '搜索结果', f'找到 {len(matched_rows)} 个匹配的玩家')
         else:
             QMessageBox.information(self, '搜索结果', '未找到匹配的玩家')
@@ -406,6 +420,121 @@ class HsRankQuery(QMainWindow):
                 item = self.result_table.item(row, col)
                 if item:
                     item.setBackground(self.result_table.palette().base())
+    
+    def open_player_query_window(self):
+        """
+        打开玩家查询窗口
+        """
+        self.player_query_window = PlayerQueryWindow(self.db_manager)
+        self.player_query_window.show()
+
+class PlayerQueryWindow(QMainWindow):
+    """
+    玩家查询窗口，用于根据玩家名字模糊搜索并显示玩家数据
+    """
+    def __init__(self, db_manager):
+        super().__init__()
+        self.db_manager = db_manager
+        self.initUI()
+    
+    def initUI(self):
+        # 设置窗口标题和大小
+        self.setWindowTitle('玩家查询')
+        self.setGeometry(200, 200, 1000, 600)
+        
+        # 创建字体
+        font = QFont()
+        font.setPointSize(14)
+        
+        # 创建中央部件
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        
+        # 创建主布局
+        main_layout = QVBoxLayout(central_widget)
+        
+        # 创建搜索区域
+        search_layout = QHBoxLayout()
+        search_layout.setContentsMargins(10, 10, 10, 10)
+        
+        # 搜索标签
+        self.search_label = QLabel('玩家名字:')
+        self.search_label.setFont(font)
+        
+        # 搜索输入框
+        self.search_input = QLineEdit()
+        self.search_input.setFont(font)
+        self.search_input.setPlaceholderText('输入玩家名字进行模糊搜索')
+        
+        # 搜索按钮
+        self.search_btn = QPushButton('搜索')
+        self.search_btn.setFont(font)
+        self.search_btn.clicked.connect(self.search_player)
+        
+        # 添加到搜索布局
+        search_layout.addWidget(self.search_label)
+        search_layout.addWidget(self.search_input)
+        search_layout.addWidget(self.search_btn)
+        
+        # 结果表格
+        self.result_table = QTableWidget()
+        self.result_table.setColumnCount(4)
+        self.result_table.setHorizontalHeaderLabels(['赛季', '玩家', '积分', '排名'])
+        header_font = QFont('Arial', 12, QFont.Bold)
+        self.result_table.horizontalHeader().setFont(header_font)
+        self.result_table.setAlternatingRowColors(True)
+        # 设置列宽自动填充
+        for i in range(4):
+            self.result_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+        
+        # 添加到主布局
+        main_layout.addLayout(search_layout)
+        main_layout.addWidget(self.result_table)
+    
+    def search_player(self):
+        """
+        根据玩家名字模糊搜索玩家数据
+        """
+        player_name = self.search_input.text().strip()
+        
+        if not player_name:
+            QMessageBox.information(self, '提示', '请输入玩家名字')
+            return
+        
+        # 从数据库获取玩家数据
+        df = self.db_manager.get_player_data(player_name)
+        
+        if df.empty:
+            QMessageBox.information(self, '提示', f'未找到玩家 {player_name} 的数据')
+            return
+        
+        # 设置表格列数和表头
+        headers = ['赛季', '玩家', '积分', '排名']
+        self.result_table.setColumnCount(len(headers))
+        self.result_table.setHorizontalHeaderLabels(headers)
+        
+        # 重新设置列宽自动填充
+        for i in range(len(headers)):
+            self.result_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+        
+        # 填充表格
+        self.result_table.setRowCount(len(df))
+        for row_idx, row_data in enumerate(df.itertuples(index=False)):
+            for col_idx, col_data in enumerate(row_data):
+                if col_idx < len(headers):
+                    item = QTableWidgetItem(str(col_data))
+                    item.setTextAlignment(Qt.AlignCenter)
+                    item.setFlags(item.flags() & ~Qt.ItemIsEditable)  # 设置为只读
+                    self.result_table.setItem(row_idx, col_idx, item)
+        
+        # 调整列宽
+        self.result_table.resizeColumnsToContents()
+        
+        # 重新设置列宽自动填充
+        for i in range(len(headers)):
+            self.result_table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+        
+        QMessageBox.information(self, '查询结果', f'找到玩家 {player_name} 在 {len(df)} 个赛季的数据')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

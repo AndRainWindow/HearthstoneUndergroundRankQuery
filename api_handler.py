@@ -85,21 +85,22 @@ class APIHandler:
             # 连接数据库
             conn = sqlite3.connect('hs_rank.db')
             
-            # 根据赛季参数构建查询
-            season_name = f'第{season}赛季'
+            # 构建赛季名称（两种格式）
+            season_name1 = f'第{season}赛季'  # 文本格式
+            season_name2 = season  # 数字格式
             
-            # 查询指定赛季的数据
+            # 查询指定赛季的数据（同时查询两种格式）
             query = '''
-            SELECT rowid, player, score
+            SELECT rank, player, score
             FROM simplified_rank_data
-            WHERE season = ?
+            WHERE season = ? OR season = ?
             ORDER BY score DESC
             LIMIT 500
             '''
             
             # 执行查询
             cursor = conn.cursor()
-            cursor.execute(query, (season_name,))
+            cursor.execute(query, (season_name1, season_name2))
             
             # 获取数据并转换格式
             db_data = cursor.fetchall()
@@ -109,7 +110,9 @@ class APIHandler:
             # 转换数据格式为 [rank, player, score]
             formatted_data = []
             for idx, row in enumerate(db_data, 1):
-                formatted_data.append([idx, row[1], row[2]])
+                # 使用数据库中存储的排名，如果没有则使用行号
+                rank = row[0] if row[0] else idx
+                formatted_data.append([rank, row[1], row[2]])
             
             return formatted_data
             
