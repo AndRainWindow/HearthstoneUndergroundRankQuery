@@ -1,0 +1,211 @@
+/* Material You 风格的 QSS 样式 */
+
+/* 全局样式 */
+QWidget {
+    background-color: #f5f5f5;
+    color: #333333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 24px;
+}
+
+/* 主窗口 */
+QMainWindow {
+    background-color: #ffffff;
+}
+
+/* 标题标签 */
+QLabel {
+    color: #333333;
+    font-weight: 500;
+}
+
+/* 按钮 */
+QPushButton {
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 500;
+}
+
+QPushButton:hover {
+    background-color: #3367d6;
+}
+
+QPushButton:pressed {
+    background-color: #2c5aa0;
+}
+
+QPushButton:disabled {
+    background-color: #dadce0;
+    color: #80868b;
+}
+
+/* 下拉菜单 */
+QComboBox {
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-width: 120px;
+}
+
+QComboBox:hover {
+    border-color: #4285f4;
+}
+
+QComboBox::drop-down {
+    border: none;
+    background: transparent;
+}
+
+QComboBox::down-arrow {
+    image: url(:/icons/down-arrow.png);
+    width: 16px;
+    height: 16px;
+}
+
+/* 输入框 */
+QLineEdit {
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+QLineEdit:hover {
+    border-color: #4285f4;
+}
+
+QLineEdit:focus {
+    border-color: #4285f4;
+    outline: none;
+    background-color: #ffffff;
+}
+
+/* 进度条 */
+QProgressBar {
+    background-color: #e8eaed;
+    border-radius: 4px;
+    text-align: center;
+    height: 8px;
+}
+
+QProgressBar::chunk {
+    background-color: #4285f4;
+    border-radius: 4px;
+}
+
+/* 表格 */
+QTableWidget {
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    gridline-color: #e8eaed;
+}
+
+QTableWidget::item {
+    padding: 8px;
+}
+
+QTableWidget::item:selected {
+    background-color: #e8f0fe;
+    color: #333333;
+}
+
+QHeaderView::section {
+    background-color: #f8f9fa;
+    color: #333333;
+    padding: 8px;
+    border: none;
+    border-bottom: 1px solid #e8eaed;
+    font-weight: 500;
+}
+
+QHeaderView::section:horizontal {
+    border-right: 1px solid #e8eaed;
+}
+
+QHeaderView::section:last:horizontal {
+    border-right: none;
+}
+
+/* 滚动条 */
+QScrollBar:vertical {
+    background-color: #f5f5f5;
+    width: 8px;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #dadce0;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #bdc1c6;
+}
+
+QScrollBar:horizontal {
+    background-color: #f5f5f5;
+    height: 8px;
+    margin: 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #dadce0;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #bdc1c6;
+}
+
+/* 分组框 */
+QGroupBox {
+    background-color: #f8f9fa;
+    border: 1px solid #e8eaed;
+    border-radius: 8px;
+    margin-top: 10px;
+    padding: 15px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 10px;
+    color: #333333;
+    font-weight: 500;
+}
+
+/* 消息框 */
+QMessageBox {
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+}
+
+/* 日历控件 */
+QCalendarWidget {
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+}
+
+QCalendarWidget QAbstractItemView:enabled {
+    selection-background-color: #4285f4;
+    selection-color: white;
+}
+
+QCalendarWidget QAbstractItemView:disabled {
+    color: #dadce0;
+}
+
+/* 工具提示 */
+QToolTip {
+    background-color: #333333;
+    color: white;
+    border-radius: 4px;
+    padding: 8px;
+}
